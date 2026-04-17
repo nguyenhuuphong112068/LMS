@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Http\Controllers\General;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class HomeController extends Controller{
+class HomeController extends Controller
+{
     public function showHomeForm()
     {
-    session()->put(['title'=> 'KẾ HOẠCH SẢN XUẤT']);
-    return view('pages.general.home');}
+        session()->put(['title' => 'TRANG CHỦ']);
+        return view('pages.general.home');
+    }
 }

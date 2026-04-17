@@ -12,7 +12,7 @@ class SwitchProductionController extends Controller
     {
 
 
-        $production = DB::table('production')->where('code', $request->production_code ?? "PXV1")->first();
+        $production = DB::table('deparments')->where('shortName', $request->production_code)->first();
         $user = $request->session()->get('user', []);
 
 
@@ -25,8 +25,8 @@ class SwitchProductionController extends Controller
             'passWord'        => $user['passWord'] ?? null,
             'group_name'      => $user['group_name'],
             //'group_code'      => $user['group_code'],
-            'production_code' => $production->code,
-            'production_name' => $production->name,
+            // 'production_code' => $production->code,
+            // 'production_name' => $production->name,
         ]);
 
         session()->put(['title' => 'KẾ HOẠCH SẢN XUẤT']);

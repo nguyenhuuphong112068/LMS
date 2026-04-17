@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>PSM Stellapharm</title>
+    <title>Quản Lý Thư Viện</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{{ asset('img/iconstella.svg') }}">
@@ -244,8 +244,8 @@
         .user-initials {
             width: 40px;
             height: 40px;
-            background: #28a745;
-            /* Màu xanh lá chủ đạo */
+            background: var(--primary-navy);
+            /* Màu Navy chủ đạo */
             color: white;
             border-radius: 50%;
             display: flex;
@@ -297,8 +297,8 @@
             width: 38px;
             height: 38px;
             background: transparent;
-            border: 2px solid #CDC717;
-            color: #CDC717;
+            border: 2px solid var(--accent-gold);
+            color: var(--accent-gold);
             border-radius: 50%;
             display: flex;
             justify-content: center;

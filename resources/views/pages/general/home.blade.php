@@ -10,17 +10,15 @@
 
 
 @section('mainContent')
-<div class="content-wrapper">
-        <div class="container-fluid" >
-            <div style="height: 60px;  position: relative;">               
-                    <img src="{{ asset('img/Stella_Icon_Main.jpg') }}"
-                                    style="width: 100%;
+    <div class="content-wrapper">
+        <div class="container-fluid">
+            <div style="height: 60px;  position: relative;">
+                <img src="{{ asset('img/Stella_Icon_Main.jpg') }}"
+                    style="width: 100%;
                                             height: 100vh;">
-            
+
             </div>
         </div>
-   
-</div>
 
-
+    </div>
 @endsection

@@ -30,14 +30,74 @@
 
       <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
       
+      <!-- Google Fonts: Arimo (Sans-serif) -->
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+      
       <style>
+            :root {
+                  --primary-navy: #003A4F;
+                  --accent-gold: #CDC717;
+                  --bg-neutral: #F8F9FA;
+                  --text-main: #2D3748;
+                  --border-radius-lg: 12px;
+                  --border-radius-md: 8px;
+                  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+                  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+                  --transition-fast: 0.2s ease;
+                  --transition-normal: 0.3s ease;
+            }
+
+            body {
+                  font-family: 'Arimo', sans-serif;
+                  background-color: var(--bg-neutral);
+                  color: var(--text-main);
+                  overflow-x: hidden;
+            }
+
+            h1, h2, h3, h4, .library-title, .module-header {
+                  font-family: 'Arimo', sans-serif;
+                  text-transform: uppercase;
+                  letter-spacing: 1px;
+                  font-weight: 700;
+                  color: var(--primary-navy);
+            }
+
+            .form-floating > label {
+                  font-family: 'Arimo', sans-serif;
+                  font-size: 0.85rem;
+                  color: #718096;
+            }
+
+            .card {
+                  border: none;
+                  border-radius: var(--border-radius-lg);
+                  box-shadow: var(--shadow-sm);
+                  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+            }
+
+            .card:hover {
+                  box-shadow: var(--shadow-md);
+            }
+
+            .btn-primary {
+                  background-color: var(--primary-navy);
+                  border-color: var(--primary-navy);
+                  border-radius: var(--border-radius-md);
+                  padding: 8px 16px;
+                  font-weight: 500;
+                  transition: all var(--transition-fast);
+            }
+
+            .btn-primary:hover {
+                  background-color: #002D3D;
+                  transform: translateY(-1px);
+                  box-shadow: 0 4px 8px rgba(0, 58, 79, 0.2);
+            }
+
             body.modal-open {
                   padding: 0 !important;
                   overflow-y: scroll;
             }
-            body {
-                  overflow-x: hidden;
-                  overflow-y: hidden;
-            }
-      
       </style>
