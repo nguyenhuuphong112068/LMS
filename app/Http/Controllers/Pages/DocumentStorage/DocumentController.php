@@ -34,6 +34,9 @@ class DocumentController extends Controller
                     'documents.*',
                     'deparments.name as department_name',
                     'locations.name as location_name',
+                    'locations.warehouse_id',
+                    'locations.room_id',
+                    'locations.shelf_id',
                     'warehouses.name as warehouse_name',
                     'rooms.name as room_name',
                     'shelves.name as shelf_name'
@@ -68,6 +71,17 @@ class DocumentController extends Controller
 
             session()->put(['title' => 'QUẢN LÝ TÀI LIỆU']);
 
+            // Tính toán tài liệu hết hạn
+            $now = \Carbon\Carbon::now();
+            $expiredCount = 0;
+            foreach ($datas as $data) {
+                $data->is_expired = false;
+                if ($data->expired_date && \Carbon\Carbon::parse($data->expired_date)->isPast()) {
+                    $data->is_expired = true;
+                    $expiredCount++;
+                }
+            }
+
             return view('pages.DocumentStorage.Document.list', [
                 'datas' => $datas,
                 'departments' => $departments,
@@ -75,7 +89,8 @@ class DocumentController extends Controller
                 'warehouses' => $warehouses,
                 'rooms' => $rooms,
                 'shelves' => $shelves,
-                'locations' => $locations
+                'locations' => $locations,
+                'expiredCount' => $expiredCount
             ]);
         } catch (\Exception $e) {
             Log::error("Document index error: " . $e->getMessage());

@@ -30,11 +30,8 @@
         <script src="{{ asset('dataTable/dist/js/demo.js') }}?v={{ filemtime(public_path('dataTable/dist/js/demo.js')) }}"></script>
         <script src="{{ asset('dataTable/dist/js/pages/dashboard3.js') }}?v={{ filemtime(public_path('dataTable/dist/js/pages/dashboard3.js')) }}"></script>
 
-        <!-- Thêm DataTables CSS -->
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-
-        <!-- Thêm DataTables JS -->
-       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>  
+        <!-- DataTables JS (Local) -->
+        <script src="{{ asset('dataTable/plugins/datatables/jquery.dataTables.min.js') }}"></script>  
 
 
         {{-- Chống double submit --}}

@@ -10,7 +10,6 @@
     <!-- Bootstrap & Fonts -->
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/bootstrap-icons.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -21,9 +20,9 @@
 
         body {
             background: linear-gradient(rgba(0, 58, 79, 0.8), rgba(0, 58, 79, 0.8)), 
-                        url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&q=80&w=2000') no-repeat center center fixed;
+                        url('{{ asset('img/Stella_Icon_Main.jpg') }}') no-repeat center center fixed;
             background-size: cover;
-            font-family: 'Arimo', sans-serif;
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             height: 100vh;
             display: flex;
             align-items: center;
@@ -43,7 +42,7 @@
         }
 
         .library-branding h2 {
-            font-family: 'Arimo', sans-serif;
+            font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             font-weight: 700;
             font-size: 2rem;
             margin-top: 15px;

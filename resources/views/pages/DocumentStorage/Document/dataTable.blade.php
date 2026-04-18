@@ -122,8 +122,13 @@
 
 <div class="content-wrapper">
     <div class="search-section mt-4 mx-3">
-        <div class="search-title">
-            <i class="fas fa-search text-primary"></i> TÌM KIẾM TÀI LIỆU NHANH
+        <div class="search-title d-flex align-items-center justify-content-between">
+            <div><i class="fas fa-search text-primary"></i> TÌM KIẾM TÀI LIỆU NHANH</div>
+            @if($expiredCount > 0)
+                <div class="badge badge-danger p-2 animate__animated animate__pulse animate__infinite" style="font-size: 0.9rem; cursor: pointer;" id="btn-filter-expired">
+                    <i class="fas fa-exclamation-triangle"></i> Có {{ $expiredCount }} tài liệu đã hết hạn!
+                </div>
+            @endif
         </div>
         <div class="row g-3">
             <div class="col-md-4">
@@ -152,6 +157,16 @@
                         @foreach ($document_types as $type)
                             <option value="{{ $type->name }}">{{ $type->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group mb-0">
+                    <label class="small font-weight-bold text-muted">Trạng thái hiệu lực</label>
+                    <select id="filter-expiry-status" class="form-control select2">
+                        <option value="all">-- Tất cả --</option>
+                        <option value="valid">Còn hiệu lực</option>
+                        <option value="expired">Đã hết hạn</option>
                     </select>
                 </div>
             </div>
@@ -240,7 +255,7 @@
             <!-- Grid View -->
             <div id="document-grid-view" class="document-grid">
                 @foreach ($datas as $data)
-                    <div class="document-card">
+                    <div class="document-card {{ $data->is_expired ? 'border-danger' : '' }}" data-is-expired="{{ $data->is_expired ? 'true' : 'false' }}">
                         <div class="status">
                             @if ($data->status_id == 1)
                                 <span class="badge badge-success">Sử dụng</span>
@@ -286,9 +301,10 @@
                             </div>
                         @endif
                         @if ($data->expired_date)
-                            <div class="info-row">
-                                <i class="fas fa-calendar-times text-warning"></i>
-                                Hết hạn: {{ \Carbon\Carbon::parse($data->expired_date)->format('d/m/Y') }}
+                            <div class="info-row {{ $data->is_expired ? 'text-danger font-weight-bold' : '' }}">
+                                <i class="fas fa-calendar-times {{ $data->is_expired ? 'text-danger' : 'text-warning' }}"></i>
+                                @if($data->is_expired) <span class="mr-1">[HẾT HẠN]</span> @endif
+                                {{ \Carbon\Carbon::parse($data->expired_date)->format('d/m/Y') }}
                             </div>
                         @endif
                         @if ($data->is_private)
@@ -322,7 +338,11 @@
                                 data-id="{{ $data->id }}" data-code="{{ $data->code }}"
                                 data-name="{{ $data->name }}" data-owner="{{ $data->owner }}"
                                 data-filepath="{{ $data->filepath }}" data-dept="{{ $data->department_id }}"
-                                data-location="{{ $data->location_id }}" data-expired="{{ $data->expired_date }}"
+                                data-location="{{ $data->location_id }}"
+                                data-warehouse="{{ $data->warehouse_id }}"
+                                data-room="{{ $data->room_id }}"
+                                data-shelf="{{ $data->shelf_id }}"
+                                data-expired="{{ $data->expired_date }}"
                                 data-private="{{ $data->is_private }}" data-types="{{ $data->document_types_id }}"
                                 data-toggle="modal" data-target="#updateModal" title="Sửa">
                                 <i class="fas fa-edit"></i>
@@ -363,7 +383,7 @@
                     </thead>
                     <tbody>
                         @foreach ($datas as $data)
-                            <tr>
+                            <tr class="{{ $data->is_expired ? 'table-danger' : '' }}" data-is-expired="{{ $data->is_expired ? 'true' : 'false' }}">
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $data->code }}</td>
                                 <td class="text-center">
@@ -426,6 +446,9 @@
                                         data-name="{{ $data->name }}" data-owner="{{ $data->owner }}"
                                         data-filepath="{{ $data->filepath }}" data-dept="{{ $data->department_id }}"
                                         data-location="{{ $data->location_id }}"
+                                        data-warehouse="{{ $data->warehouse_id }}"
+                                        data-room="{{ $data->room_id }}"
+                                        data-shelf="{{ $data->shelf_id }}"
                                         data-expired="{{ $data->expired_date }}"
                                         data-private="{{ $data->is_private }}"
                                         data-types="{{ $data->document_types_id }}" data-toggle="modal"
@@ -458,8 +481,8 @@
 <script src="{{ asset('js/popper.min.js') }}"></script>
 <script src="{{ asset('js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ asset('js/qrcode.min.js') }}"></script>
+<script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
 
 @if (session('success'))
     <script>
@@ -504,16 +527,26 @@
             const room = $('#filter-room').val();
             const shelf = $('#filter-shelf').val();
             const location = $('#filter-location').val();
+            const expiryStatus = $('#filter-expiry-status').val();
 
             // Filter Table View
+            $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                if (expiryStatus === 'all') return true;
+                const isExpired = $(table.row(dataIndex).node()).attr('data-is-expired') === 'true';
+                if (expiryStatus === 'expired') return isExpired;
+                if (expiryStatus === 'valid') return !isExpired;
+                return true;
+            });
             table.search(keyword).draw();
+            $.fn.dataTable.ext.search.pop();
 
             // Filter Grid View
             $('.document-card').each(function() {
                 const card = $(this);
                 const name = card.find('.name').text().toLowerCase();
                 const code = card.find('.code').text().toLowerCase();
-                const cardText = card.text();
+                const cardText = card.text(); 
+                const cardIsExpired = card.attr('data-is-expired') === 'true';
 
                 let visible = true;
 
@@ -523,6 +556,10 @@
                 if (room && !cardText.includes(room)) visible = false;
                 if (shelf && !cardText.includes(shelf)) visible = false;
                 if (location && !cardText.includes(location)) visible = false;
+                
+                // Expiry status filter
+                if (expiryStatus === 'expired' && !cardIsExpired) visible = false;
+                if (expiryStatus === 'valid' && cardIsExpired) visible = false;
 
                 if (visible) {
                     card.show();
@@ -533,8 +570,14 @@
         }
 
         $('#quick-search-input').on('keyup', applyFilters);
-        $('#filter-location, #filter-type, #filter-warehouse, #filter-room, #filter-shelf').on('change',
+        $('#filter-location, #filter-type, #filter-warehouse, #filter-room, #filter-shelf, #filter-expiry-status').on('change',
             applyFilters);
+        
+        // Quick filter from badge
+        $('#btn-filter-expired').click(function() {
+            $('#filter-expiry-status').val('expired').trigger('change');
+        });
+
         $('#btn-reset-filter').click(function() {
             $('#quick-search-input').val('');
             $('#filter-type').val('').trigger('change');
@@ -542,6 +585,7 @@
             $('#filter-room').val('').trigger('change');
             $('#filter-shelf').val('').trigger('change');
             $('#filter-location').val('').trigger('change');
+            $('#filter-expiry-status').val('all').trigger('change');
             applyFilters();
         });
 
@@ -608,9 +652,14 @@
             modal.find('#update_filepath').val(button.data('filepath'));
             modal.find('#update_dept_display').val(button.data('dept'));
             modal.find('#update_dept_id').val(button.data('dept'));
-            modal.find('#update_location').val(button.data('location'));
             modal.find('#update_expired').val(button.data('expired'));
             modal.find('#update_is_private').prop('checked', button.data('private') == 1);
+
+            // Hierarchy Update Logic
+            modal.find('#update_warehouse_id').val(button.data('warehouse')).trigger('change');
+            modal.find('#update_room_id').val(button.data('room')).trigger('change');
+            modal.find('#update_shelf_id').val(button.data('shelf')).trigger('change');
+            modal.find('#update_location_id').val(button.data('location'));
 
             // Populate multi-select for Document Types
             const types = button.data('types');
@@ -917,10 +966,14 @@
             setTimeout(() => {
                 html5QrCode = new Html5Qrcode("qr-reader");
                 const config = {
-                    fps: 15,
-                    qrbox: {
-                        width: 250,
-                        height: 250
+                    fps: 20, // Tăng fps để quét nhanh hơn
+                    qrbox: function(viewfinderWidth, viewfinderHeight) {
+                        let minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                        let fontSize = Math.floor(minEdge * 0.6);
+                        return {
+                            width: fontSize,
+                            height: fontSize
+                        };
                     },
                     aspectRatio: 1.0
                 };
@@ -930,15 +983,17 @@
                     },
                     config,
                     (decodedText, decodedResult) => {
-                        // Success
-                        $('#quick-search-input').val(decodedText).keyup();
+                        // Thành công
+                        $('#quick-search-input').val(decodedText).trigger('keyup');
                         $('#qrScannerModal').modal('hide');
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'Đã nhận diện!',
                             text: 'Mã: ' + decodedText,
-                            timer: 1000,
-                            showConfirmButton: false
+                            timer: 1500,
+                            showConfirmButton: false,
+                            position: 'top'
                         });
                         stopScanner();
                     },

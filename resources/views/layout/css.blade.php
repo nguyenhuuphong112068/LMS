@@ -10,7 +10,7 @@
 
       <link rel="stylesheet" href="{{asset ('dataTable/plugins/fontawesome-free/css/all.min.css')}}">
       <!-- Ionicons -->
-      <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+      <link rel="stylesheet" href="{{asset ('css/ionicons.min.css')}}">
       <!-- daterange picker -->
       <link rel="stylesheet" href="{{asset ('dataTable/plugins/daterangepicker/daterangepicker.css')}}">
       <!-- iCheck for checkboxes and radio inputs -->
@@ -30,10 +30,7 @@
 
       <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
       
-      <!-- Google Fonts: Arimo (Sans-serif) -->
-      <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-      <link href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
+      <!-- Fonts: Sans-serif system -->
       
       <style>
             :root {
@@ -50,14 +47,14 @@
             }
 
             body {
-                  font-family: 'Arimo', sans-serif;
+      font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
                   background-color: var(--bg-neutral);
                   color: var(--text-main);
                   overflow-x: hidden;
             }
 
             h1, h2, h3, h4, .library-title, .module-header {
-                  font-family: 'Arimo', sans-serif;
+      font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
                   text-transform: uppercase;
                   letter-spacing: 1px;
                   font-weight: 700;
@@ -65,7 +62,7 @@
             }
 
             .form-floating > label {
-                  font-family: 'Arimo', sans-serif;
+      font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
                   font-size: 0.85rem;
                   color: #718096;
             }

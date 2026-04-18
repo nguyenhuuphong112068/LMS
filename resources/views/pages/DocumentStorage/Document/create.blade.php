@@ -63,14 +63,54 @@
                         <small class="text-muted" id="file_name_display"></small>
                     </div>
 
-                    <div class="form-group">
-                        <label>Vị trí lưu trữ <span class="text-danger">*</span></label>
-                        <select name="location_id" class="form-control" required>
-                            <option value="">-- Chọn Vị trí --</option>
-                            @foreach ($locations as $loc)
-                                <option value="{{ $loc->id }}">{{ $loc->name }} ({{ $loc->code }})</option>
-                            @endforeach
-                        </select>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Kho <span class="text-danger">*</span></label>
+                                <select id="create_warehouse_id" class="form-control" required>
+                                    <option value="">-- Chọn Kho --</option>
+                                    @foreach ($warehouses as $wh)
+                                        <option value="{{ $wh->id }}">{{ $wh->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Phòng <span class="text-danger">*</span></label>
+                                <select id="create_room_id" class="form-control" required disabled>
+                                    <option value="">-- Chọn Phòng --</option>
+                                    @foreach ($rooms as $room)
+                                        <option value="{{ $room->id }}" data-warehouse="{{ $room->warehouse_id }}">{{ $room->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Kệ <span class="text-danger">*</span></label>
+                                <select id="create_shelf_id" class="form-control" required disabled>
+                                    <option value="">-- Chọn Kệ --</option>
+                                    @foreach ($shelves as $shelf)
+                                        <option value="{{ $shelf->id }}" data-room="{{ $shelf->room_id }}">{{ $shelf->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Vị trí chi tiết <span class="text-danger">*</span></label>
+                                <select name="location_id" id="create_location_id" class="form-control" required disabled>
+                                    <option value="">-- Chọn Vị trí --</option>
+                                    @foreach ($locations as $loc)
+                                        <option value="{{ $loc->id }}" data-shelf="{{ $loc->shelf_id }}">{{ $loc->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row">
@@ -118,5 +158,31 @@
                 }
             });
         }
+        // Cascading Logic for Creation
+        const warehouseSelect = $('#create_warehouse_id');
+        const roomSelect = $('#create_room_id');
+        const shelfSelect = $('#create_shelf_id');
+        const locationSelect = $('#create_location_id');
+
+        warehouseSelect.on('change', function() {
+            const whId = $(this).val();
+            roomSelect.val('').trigger('change').prop('disabled', !whId);
+            roomSelect.find('option').hide().filter((i, el) => !$(el).val() || $(el).attr('data-warehouse') == whId).show();
+            shelfSelect.val('').trigger('change').prop('disabled', true);
+            locationSelect.val('').trigger('change').prop('disabled', true);
+        });
+
+        roomSelect.on('change', function() {
+            const roomId = $(this).val();
+            shelfSelect.val('').trigger('change').prop('disabled', !roomId);
+            shelfSelect.find('option').hide().filter((i, el) => !$(el).val() || $(el).attr('data-room') == roomId).show();
+            locationSelect.val('').trigger('change').prop('disabled', true);
+        });
+
+        shelfSelect.on('change', function() {
+            const shelfId = $(this).val();
+            locationSelect.val('').trigger('change').prop('disabled', !shelfId);
+            locationSelect.find('option').hide().filter((i, el) => !$(el).val() || $(el).attr('data-shelf') == shelfId).show();
+        });
     });
 </script>
