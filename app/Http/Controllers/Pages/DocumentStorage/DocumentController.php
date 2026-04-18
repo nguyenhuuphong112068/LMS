@@ -13,9 +13,18 @@ class DocumentController extends Controller
 {
     public function index()
     {
+        // KIỂM TRA SESSION AN TOÀN TRƯỚC KHI CHẠY
+        if (!session()->has('user') || !isset(session('user')['selected_department_id'])) {
+            return redirect()->route('login')->with('error', 'Phiên làm việc hết hạn, vui lòng đăng nhập lại.');
+        }
+
         try {
+            $user = session('user');
+            $selectedDeptId = $user['selected_department_id'];
+            $userDeptId = $user['department_id'] ?? $selectedDeptId;
+
             $datas = DB::table('documents')
-                ->where('documents.department_id', session('user')['selected_department_id'])
+                ->where('documents.department_id', $selectedDeptId)
                 ->leftJoin('deparments', 'documents.department_id', '=', 'deparments.id')
                 ->leftJoin('locations', 'documents.location_id', '=', 'locations.id')
                 ->leftJoin('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
@@ -53,16 +62,11 @@ class DocumentController extends Controller
             $rooms = DB::table('rooms')->where('active', true)->get();
             $shelves = DB::table('shelves')->where('active', true)->get();
             $locations = DB::table('locations')
-                ->where('department_id', session('user')['department_id'])
+                ->where('department_id', $userDeptId)
                 ->where('status_id', 1)
                 ->get();
 
             session()->put(['title' => 'QUẢN LÝ TÀI LIỆU']);
-
-            // KIỂM TRA DỮ LIỆU TRƯỚC KHI TRẢ VỀ VIEW
-            if ($datas->count() > 0 && !isset($datas[0]->document_types_id)) {
-                return "LỖI: Thuộc tính document_types_id chưa được gán thành công!";
-            }
 
             return view('pages.DocumentStorage.Document.list', [
                 'datas' => $datas,
