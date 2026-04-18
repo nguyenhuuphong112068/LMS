@@ -39,16 +39,15 @@ class DocumentController extends Controller
                 ->get()
                 ->groupBy('document_id');
 
-            $datas->transform(function ($data) use ($typesMap) {
+            foreach ($datas as $data) {
                 $data->document_types_id = isset($typesMap[$data->id])
                     ? $typesMap[$data->id]->pluck('document_type_id')->toJson()
                     : json_encode([]);
-                return $data;
-            });
+            }
 
             $departments = DB::table('deparments')->where('active', true)->get();
             $document_types = DB::table('document_types')->get();
-
+            
             // Fetch storage hierarchy for filters
             $warehouses = DB::table('warehouses')->where('active', true)->get();
             $rooms = DB::table('rooms')->where('active', true)->get();
@@ -59,6 +58,12 @@ class DocumentController extends Controller
                 ->get();
 
             session()->put(['title' => 'QUẢN LÝ TÀI LIỆU']);
+
+            // KIỂM TRA DỮ LIỆU TRƯỚC KHI TRẢ VỀ VIEW
+            if ($datas->count() > 0 && !isset($datas[0]->document_types_id)) {
+                return "LỖI: Thuộc tính document_types_id chưa được gán thành công!";
+            }
+
             return view('pages.DocumentStorage.Document.list', [
                 'datas' => $datas,
                 'departments' => $departments,
@@ -70,7 +75,7 @@ class DocumentController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error("Document index error: " . $e->getMessage());
-            return "Lỗi Server (500): " . $e->getMessage();
+            return "Lỗi Server (500): " . $e->getMessage() . " tại dòng " . $e->getLine();
         }
     }
 
