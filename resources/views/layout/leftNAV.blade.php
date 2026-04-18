@@ -86,7 +86,7 @@
                     <a href="#" class="nav-link">
                         <i class="fas fa-building"></i>
                         <p>
-                            {{ session('user')['department'] }}
+                            {{ session('user')['selected_department'] }}
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
@@ -96,10 +96,10 @@
                         @endphp
                         @foreach ($departments as $dept)
                             <li class="nav-item">
-                                <a href="{{ route('switch', ['department' => $dept->shortName, 'redirect' => url()->current()]) }}"
+                                <a href="{{ route('switch', ['selected_department' => $dept->shortName, 'redirect' => url()->current()]) }}"
                                     class="nav-link">
                                     <i
-                                        class="far fa-circle nav-icon {{ session('user')['department'] == $dept->shortName ? 'text-danger' : '' }}"></i>
+                                        class="far fa-circle nav-icon {{ session('user')['selected_department'] == $dept->shortName ? 'text-danger' : '' }}"></i>
                                     <p>{{ $dept->shortName }}</p>
                                 </a>
                             </li>
@@ -118,45 +118,59 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item"><a href="{{ route('pages.materData.productName.list') }}"
-                                class="nav-link"><i class="far fa-circle nav-icon"></i>
-                                <p>Tên Sản Phẩm</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('pages.materData.room.list') }}" class="nav-link"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Phòng Sản Xuất</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('pages.materData.Dosage.list') }}" class="nav-link"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Dạng Bào Chế</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('pages.materData.Unit.list') }}" class="nav-link"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Đơn Vị Tính</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('pages.materData.Market.list') }}" class="nav-link"><i
-                                    class="far fa-circle nav-icon"></i>
-                                <p>Thị Trường</p>
-                            </a></li>
-                        <li class="nav-item"><a href="{{ route('pages.materData.Specification.list') }}"
-                                class="nav-link"><i class="far fa-circle nav-icon"></i>
-                                <p>Qui Cách</p>
-                            </a></li>
-                        @if (user_has_permission(session('user')['userId'], 'layout_test', 'boolean'))
-                            <li class="nav-item"><a href="{{ route('pages.materData.offdays.list') }}"
-                                    class="nav-link"><i class="far fa-circle nav-icon text-warning"></i>
-                                    <p>Cập nhật ngày nghỉ</p>
-                                </a></li>
-                        @endif
-                        <li class="nav-item"><a href="{{ route('pages.materData.stageGroup.list') }}"
-                                class="nav-link"><i class="far fa-circle nav-icon text-info"></i>
-                                <p>Tổ Quản Lý</p>
-                            </a></li>
                         <li class="nav-item"><a href="{{ route('pages.materData.department.list') }}"
                                 class="nav-link"><i class="far fa-circle nav-icon text-info"></i>
                                 <p>Phòng Ban</p>
                             </a></li>
+                        <li class="nav-item"><a href="{{ route('pages.materData.status.list') }}" class="nav-link"><i
+                                    class="far fa-circle nav-icon text-warning"></i>
+                                <p>Trạng Thái</p>
+                            </a></li>
+                        <li class="nav-item"><a href="{{ route('pages.materData.documentType.list') }}"
+                                class="nav-link"><i class="far fa-circle nav-icon text-success"></i>
+                                <p>Loại Tài Liệu</p>
+                            </a></li>
                     </ul>
+                </li>
+
+                <!-- Droplist Menu Vị Trí Lưu Trữ -->
+                <li
+                    class="nav-item has-treeview {{ str_contains(url()->current(), 'storageLocation') ? 'menu-open' : '' }}">
+                    <a href="#"
+                        class="nav-link {{ str_contains(url()->current(), 'storageLocation') ? 'active' : '' }}">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>
+                            Vị Trí Lưu Trữ
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"><a href="{{ route('pages.storageLocation.warehouse.list') }}"
+                                class="nav-link"><i class="far fa-circle nav-icon text-primary"></i>
+                                <p>Kho</p>
+                            </a></li>
+                        <li class="nav-item"><a href="{{ route('pages.storageLocation.room.list') }}" class="nav-link"><i
+                                    class="far fa-circle nav-icon text-info"></i>
+                                <p>Phòng</p>
+                            </a></li>
+                        <li class="nav-item"><a href="{{ route('pages.storageLocation.shelf.list') }}" class="nav-link"><i
+                                    class="far fa-circle nav-icon text-warning"></i>
+                                <p>Kệ (Shelf)</p>
+                            </a></li>
+                        <li class="nav-item"><a href="{{ route('pages.storageLocation.location.list') }}" class="nav-link"><i
+                                    class="far fa-circle nav-icon text-danger"></i>
+                                <p>Vị trí (Location)</p>
+                            </a></li>
+                    </ul>
+                </li>
+
+                <!-- Quản lý Tài liệu -->
+                <li class="nav-item">
+                    <a href="{{ route('pages.documentStorage.document.list') }}"
+                        class="nav-link {{ str_contains(url()->current(), 'documentStorage') ? 'active' : '' }}">
+                        <i class="fas fa-file-contract"></i>
+                        <p>Quản lý Tài liệu</p>
+                    </a>
                 </li>
 
                 <!-- User Policy -->

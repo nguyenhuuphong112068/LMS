@@ -37,19 +37,6 @@ class LoginController extends Controller
             return redirect()->route('login')->with('error', 'PassWord Không Chính Xác, Vui Lòng Đăng Nhập Lại!')->with('activeForm', 'login');
         }
 
-        // $departmemt = DB::table('departmemt')
-        //     ->where('code', $getUser->deparment)
-        //     ->first();
-
-        // if ($production) {
-        //     $production_code = $production->code;
-        //     $production_name = $production->name;
-        // } else {
-        $production_code = 'PXV1';
-        $production_name = 'PX Viên 1';
-        // }
-
-
         $request->session()->put('user', [
             'userId' => $getUser->id,
             'userName' => $getUser->userName,
@@ -57,9 +44,9 @@ class LoginController extends Controller
             'passWord' => $request->passWord,
             'userGroup' => $getUser->userGroup,
             'department' => $getUser->deparment,
-            'group_name' => $getUser->groupName,
-            // 'production_code' => $production_code,
-            // 'production_name' => $production_name,
+            'department_id' => DB::table('deparments')->where('shortName', $getUser->deparment)->first()->id,
+            'selected_department' => $getUser->deparment,
+            'selected_department_id' => DB::table('deparments')->where('shortName', $getUser->deparment)->first()->id,
 
         ]);
 

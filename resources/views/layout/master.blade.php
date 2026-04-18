@@ -793,14 +793,13 @@
 
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-navbar-fixed layout-fixed">
 
     <!-- General wrapper -->
     <div class="wrapper">
 
-        @yield('topNAV')
-
-        @yield('leftNAV')
+        @include('layout.topNAV')
+        @include('layout.leftNAV')
 
         @yield('mainContent')
 
