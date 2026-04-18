@@ -218,9 +218,9 @@
                         style="width: 170px; border-radius: 8px; font-weight: 600;">
                         <i class="fas fa-plus-circle"></i> THÊM TÀI LIỆU
                     </button>
-                    @if (session('user')['userGroup'] == 'Admin')
+                    @if (isset(session('user')['userGroup']) && session('user')['userGroup'] == 'Admin')
                         <button class="btn btn-dark shadow-sm ml-2" id="btn-config-camera"
-                            style="border-radius: 8px; font-weight: 600;" title="Cấu hình camera cho mạng nội bộ">
+                            style="border-radius: 8px; font-weight: 600;" title="Cấu hình camera cho mang nội bộ">
                             <i class="fas fa-tools"></i> CÀI ĐẶT CAMERA
                         </button>
                     @endif
