@@ -213,10 +213,18 @@
     <div class="card shadow-none bg-transparent mx-3">
         <div class="card-body p-0">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"
-                    style="width: 170px; border-radius: 8px; font-weight: 600;">
-                    <i class="fas fa-plus-circle"></i> THÊM TÀI LIỆU
-                </button>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#createModal"
+                        style="width: 170px; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-plus-circle"></i> THÊM TÀI LIỆU
+                    </button>
+                    @if (session('user')['userGroup'] == 'Admin')
+                        <button class="btn btn-dark shadow-sm ml-2" id="btn-config-camera"
+                            style="border-radius: 8px; font-weight: 600;" title="Cấu hình camera cho mạng nội bộ">
+                            <i class="fas fa-tools"></i> CÀI ĐẶT CAMERA
+                        </button>
+                    @endif
+                </div>
 
 
                 <div class="view-toggle">
@@ -631,6 +639,50 @@
             $('#file_name_display').text('').removeClass('text-success font-weight-bold').addClass(
                 'text-muted');
         });
+
+        // Config Camera Logic (Admin only)
+        $('#btn-config-camera').on('click', function() {
+            Swal.fire({
+                title: 'HƯỚNG DẪN CÀI ĐẶT CAMERA',
+                icon: 'info',
+                html: `
+                    <div class="text-left" style="font-size: 0.9rem;">
+                        <p class="text-danger font-weight-bold">Lưu ý: Trình duyệt không cho phép mở trực tiếp trang cấu hình nội bộ. Hãy thực hiện thủ công:</p>
+                        <ol>
+                            <li>Bấm nút xanh dưới đây để <b>sao chép đường dẫn</b>.</li>
+                            <li><b>Dán (Paste)</b> vào thanh địa chỉ của Trình duyệt máy con rồi nhấn Enter.</li>
+                            <li>Tại ô <b>Insecure origins treated as secure</b>, nhập đúng địa chỉ: <br>
+                                <code class="p-1 bg-light border d-block my-1 text-primary">${window.location.origin}</code>
+                            </li>
+                            <li>Chọn <b>Enabled</b> và nhấn nút <b>Relaunch</b> bên dưới.</li>
+                        </ol>
+                        <button id="copy-flag-link" class="btn btn-success btn-sm w-100 mt-2">
+                            <i class="fas fa-copy"></i> SAO CHÉP ĐƯỜNG DẪN CẤU HÌNH
+                        </button>
+                    </div>
+                `,
+                showConfirmButton: false,
+                showCloseButton: true
+            });
+        });
+
+        $(document).on('click', '#copy-flag-link', function() {
+            const link = 'chrome://flags/#unsafely-treat-insecure-origin-as-secure';
+            const temp = $('<input>');
+            $('body').append(temp);
+            temp.val(link).select();
+            document.execCommand('copy');
+            temp.remove();
+
+            $(this).html('<i class="fas fa-check"></i> ĐÃ SAO CHÉP!').removeClass('btn-success')
+                .addClass('btn-secondary');
+            setTimeout(() => {
+                $('#copy-flag-link').html(
+                    '<i class="fas fa-copy"></i> SAO CHÉP ĐƯỜNG DẪN CẤU HÌNH').removeClass(
+                    'btn-secondary').addClass('btn-success');
+            }, 2000);
+        });
+
 
         // Generate QR Codes
         function generateAllQRs() {
