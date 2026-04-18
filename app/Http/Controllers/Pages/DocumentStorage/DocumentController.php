@@ -7,64 +7,71 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
     public function index()
     {
-        $datas = DB::table('documents')
-            ->where('documents.department_id', session('user')['selected_department_id'])
-            ->leftJoin('deparments', 'documents.department_id', '=', 'deparments.id')
-            ->leftJoin('locations', 'documents.location_id', '=', 'locations.id')
-            ->leftJoin('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
-            ->leftJoin('rooms', 'locations.room_id', '=', 'rooms.id')
-            ->leftJoin('shelves', 'locations.shelf_id', '=', 'shelves.id')
-            ->select(
-                'documents.*', 
-                'deparments.name as department_name', 
-                'locations.name as location_name',
-                'warehouses.name as warehouse_name',
-                'rooms.name as room_name',
-                'shelves.name as shelf_name'
-            )
-            ->orderBy('documents.name', 'asc')
-            ->get();
+        try {
+            $datas = DB::table('documents')
+                ->where('documents.department_id', session('user')['selected_department_id'])
+                ->leftJoin('deparments', 'documents.department_id', '=', 'deparments.id')
+                ->leftJoin('locations', 'documents.location_id', '=', 'locations.id')
+                ->leftJoin('warehouses', 'locations.warehouse_id', '=', 'warehouses.id')
+                ->leftJoin('rooms', 'locations.room_id', '=', 'rooms.id')
+                ->leftJoin('shelves', 'locations.shelf_id', '=', 'shelves.id')
+                ->select(
+                    'documents.*',
+                    'deparments.name as department_name',
+                    'locations.name as location_name',
+                    'warehouses.name as warehouse_name',
+                    'rooms.name as room_name',
+                    'shelves.name as shelf_name'
+                )
+                ->orderBy('documents.name', 'asc')
+                ->get();
 
-        // Get document types from pivot table for each document
-        $docIds = $datas->pluck('id');
-        $typesMap = DB::table('document_has_types')
-            ->whereIn('document_id', $docIds)
-            ->get()
-            ->groupBy('document_id');
+            // Get document types from pivot table for each document
+            $docIds = $datas->pluck('id');
+            $typesMap = DB::table('document_has_types')
+                ->whereIn('document_id', $docIds)
+                ->get()
+                ->groupBy('document_id');
 
-        foreach ($datas as $data) {
-            $data->document_types_id = isset($typesMap[$data->id])
-                ? $typesMap[$data->id]->pluck('document_type_id')->toJson()
-                : json_encode([]);
+            $datas->transform(function ($data) use ($typesMap) {
+                $data->document_types_id = isset($typesMap[$data->id])
+                    ? $typesMap[$data->id]->pluck('document_type_id')->toJson()
+                    : json_encode([]);
+                return $data;
+            });
+
+            $departments = DB::table('deparments')->where('active', true)->get();
+            $document_types = DB::table('document_types')->get();
+
+            // Fetch storage hierarchy for filters
+            $warehouses = DB::table('warehouses')->where('active', true)->get();
+            $rooms = DB::table('rooms')->where('active', true)->get();
+            $shelves = DB::table('shelves')->where('active', true)->get();
+            $locations = DB::table('locations')
+                ->where('department_id', session('user')['department_id'])
+                ->where('status_id', 1)
+                ->get();
+
+            session()->put(['title' => 'QUẢN LÝ TÀI LIỆU']);
+            return view('pages.DocumentStorage.Document.list', [
+                'datas' => $datas,
+                'departments' => $departments,
+                'document_types' => $document_types,
+                'warehouses' => $warehouses,
+                'rooms' => $rooms,
+                'shelves' => $shelves,
+                'locations' => $locations
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Document index error: " . $e->getMessage());
+            return "Lỗi Server (500): " . $e->getMessage();
         }
-
-        $departments = DB::table('deparments')->where('active', true)->get();
-        $document_types = DB::table('document_types')->get();
-        
-        // Fetch storage hierarchy for filters
-        $warehouses = DB::table('warehouses')->where('active', true)->get();
-        $rooms = DB::table('rooms')->where('active', true)->get();
-        $shelves = DB::table('shelves')->where('active', true)->get();
-        $locations = DB::table('locations')
-            ->where('department_id', session('user')['department_id'])
-            ->where('status_id', 1)
-            ->get();
-
-        session()->put(['title' => 'QUẢN LÝ TÀI LIỆU']);
-        return view('pages.DocumentStorage.Document.list', [
-            'datas' => $datas,
-            'departments' => $departments,
-            'document_types' => $document_types,
-            'warehouses' => $warehouses,
-            'rooms' => $rooms,
-            'shelves' => $shelves,
-            'locations' => $locations
-        ]);
     }
 
     public function store(Request $request)
